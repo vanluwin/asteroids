@@ -2,21 +2,22 @@
 var nave;
 var meteoros = [];
 var tiros = [];
-var tempo = 3000;
+var tempo = 1500;
 var pontos = 0;
 var vidas = 2;
+var estado = 0;
 
-/*
-function preload(){
+
+/*function preload(){
   ship = loadImage('imagens/ship.png');
-  imagens[1] = loadImage('imagens/meteoro.png');
-  imagens[2] = loadImage('imagens/tiro.png');
-}
-*/
+  //imagens[1] = loadImage('imagens/meteoro.png');
+  //imagens[2] = loadImage('imagens/tiro.png');
+}*/
+
 //função do framework p5js que é executada uma vez ao inicio do sketch
 function setup() {
   //cria o lugar onde o jogo acontecerá
-  createCanvas(1330,600);
+  createCanvas(1350,670);
 
   //cria um obejeto nave
   nave = new Nave();
@@ -30,16 +31,21 @@ function setup() {
   setInterval(criarMeteoro, tempo);
 
 
+
+
 }
 
 //funcção para criar novos meteoros
 function criarMeteoro(){
   //adiciona no vetor meteoros um novo meteoro
+  if(estado == 1){
   meteoros.push(new Meteoro());
   //diminui o tempo de criação de novos meteoros ate atingir 0.5s
-  if(tempo > 500){
-    tempo-=500;
+  if(tempo > 450){
+    tempo-=450;
   }
+
+}
 }
 
 //função para adicionar pontos ao placar
@@ -57,6 +63,13 @@ function draw(){
   //define o fundo do canvas como preto
   background(0);
 
+  if(estado == 0){
+    menu();
+    for (var i = 0; i < meteoros.length; i++) {
+      meteoros[i].update();//metodo para mover o meteoro
+      meteoros[i].mostrar();//metodo para mostrar o meteoro
+    }
+  }else if(estado == 1){
   //escreve na tela os pontos do jogador e sua vidas restantes
   textSize(25);
   fill(255);
@@ -67,7 +80,7 @@ function draw(){
   for (var i = 0; i < meteoros.length; i++) {
     meteoros[i].update();//metodo para mover o meteoro
     meteoros[i].mostrar();//metodo para mostrar o meteoro
-    meteoros[i].edges();//metodo para verificar se o meteoro se encontra nas bordas do canvas
+    //meteoros[i].edges();//metodo para verificar se o meteoro se encontra nas bordas do canvas
     nave.atingida(meteoros[i]);//metodo para verificar se um meteoro atingiu a nave
   }
 
@@ -94,10 +107,19 @@ function draw(){
     }
   }
 
-  nave.mostrar();//metodo para desenhar a nave
-  nave.update();//metodo para mover a nave
-  nave.edges();//metodo para verficar se a nave esta nas bordas da tela
+    nave.mostrar();//metodo para desenhar a nave
+    nave.update();//metodo para mover a nave
+    nave.edges();//metodo para verficar se a nave esta nas bordas da tela
 
+}else if(estado == 2){
+  gameOver();
+  for (var i = 0; i < meteoros.length; i++) {
+    meteoros[i].update();//metodo para mover o meteoro
+    meteoros[i].mostrar();//metodo para mostrar o meteoro
+  }
+}else if(estado == 3){
+  pontuacao();
+}
 }
 
 //função do framework p5 que verifica se alguma tecla foi 'despressionada'
@@ -131,7 +153,11 @@ function keyPressed() {
   } else if (key === ' '){
     //se a telca foi a barra de espaço e a nave esta morta a pagina será recarregada
     //se não um novo tiro sera criado e adicionado no vetor tiros
-    if(nave.morto){
+    if(estado == 0){
+      estado = 1;
+    }else if(estado == 2){
+        estado = 3;
+    }else if(estado == 3){
       recarregar();
     }else{
       var tiro = new Tiro(nave.posicao, nave.angulo);
@@ -139,4 +165,41 @@ function keyPressed() {
     }
 
   }
+}
+
+function menu(){
+  fill(255);
+  textSize(100);
+  text("Asteroids", 450, 240);
+  textSize(30);
+  text("Pressione espaço para jogar",480, 300);
+}
+var input, button, greeting;
+function gameOver() {
+  textSize(80);
+  noStroke();
+  fill(255);
+  text("Game Over", 450, 240);
+
+}
+
+function pontuacao(){
+  var hiScores = [
+    ["Gandalf", 2000],
+    ["Son Goku", 9999],
+    ["Nazgûl", 1500],
+    ["Suco de Frutas", 10000],
+    ["Player", pontos]
+  ];
+  hiScores.sort(function(a, b) {
+    return b[1] - a[1];
+  });
+  textSize(30);
+  text("Hiscores", 630, 130);
+			for (var i = 0, len = hiScores.length; i < len; i++) {
+				var hs = hiScores[i];
+				text(hs[0], 450, 170+50*i);
+				text(hs[1], 800, 170+50*i);
+			}
+  text("Pressione espaço para tentar novamente",450, 450);
 }

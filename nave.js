@@ -7,7 +7,7 @@ function Nave(){
    this.k = 0;                                   //define o multiplicador do angulo inicialmente como zero
    this.r = 20;                                  //raio para ser verificado colisões
    this.isBoosting = false;                      //define o estado 'está acelerando' como falso
-   this.morto = false;                           //define o estado 'morto' como falso
+   this.vivo = true;                           //define o estado 'morto' como falso
 
   this.boosting = function(b) {   //função para definir o estado 'está acelerando' como o parametro b
     this.isBoosting = b;
@@ -17,15 +17,38 @@ function Nave(){
   this.mostrar = function() {
     this.angulo += this.k;  //adiciona ao angulo o multiplicador 'k'
     stroke(255);            //define o contorno com a cor branco
-    fill(0);                //preence a forma com preto
-    rectMode(CENTER);
+    fill(0);              //preence a forma com preto
+
     push();                 //começa uma nova rotina de desenho
     translate(this.posicao.x, this.posicao.y);  //muda o centro de cordenadas da tela para a atual posição da nave
     rotate(this.angulo);                        //roda a nave em seu atual angulo
-    triangle(-this.r, this.r, this.r, this.r, 0, -this.r);//forma da nave
-    pop();                 //encerra a nova rotina de desenho a retorna a padrão
-    //rect(0, 0, 10, 20);
-    //image(ship, this.posicao.x, this.posicao.y);
+    rectMode(CENTER);
+    //image(ship,ship.width,ship.height)
+    //triangle(-this.r, this.r, this.r, this.r, 0, -this.r);
+    //forma da nave se estiver acelerando
+    if(this.isBoosting){
+      beginShape();
+        vertex(-10, 20);
+        vertex(0, 15);
+        vertex(10, 20);
+        vertex(0, -10);
+      endShape(CLOSE);
+      beginShape();//se nave estiver acelerando desenhar as chamas
+        vertex(-5, 17.5);
+        vertex(-5, 24);
+        vertex(0, 28);
+        vertex(5, 24);
+        vertex(5, 17.5);
+      endShape();
+    }else{//forma da nave se não estiver acelerando
+    beginShape();
+      vertex(-10, 20);
+      vertex(0, 15);
+      vertex(10, 20);
+      vertex(0, -10);
+    endShape(CLOSE);
+  }
+    pop();    //encerra a nova rotina de desenho a retorna a padrão
   }
 
   //define o metodo para mover a nave
@@ -61,18 +84,13 @@ function Nave(){
   }
 
   //define o metodo que verifica se a nave foi atingida
-  this.atingida = function( meteoro) {
+  this.atingida = function(meteoro) {
     //cria a variavel 'd' que recebe a distancia entre a posicção atual da nave e o meteoro que foi passado como parâmetro
     var d = dist(this.posicao.x, this.posicao.y, meteoro.posicao.x, meteoro.posicao.y);
     if(d < this.r + meteoro.r-5){ //se o raio de colisão da nave for menor que sua soma com o raio do metroro
       if(vidas == 0){       //se não houver mais vidas escreve na tela fim de jogo
-        textSize(30);
-        noStroke();
-        fill(255,0,0);
-        text("       Game Over", 520, 240);
-        text("Precione espaço para tentar novamente",420, 280);
-        this.morto = true;
-        nave = NULL;
+        estado = 2;
+        this.vivo = false;
       }else{                //se ainda houver vidas
         vidas--;            //uma vida é perdida
         nave = new Nave();  //e a nave volta para o centro da tela

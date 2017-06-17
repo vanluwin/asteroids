@@ -53,6 +53,7 @@ function Meteoro(posicao, r){
   }
 
   //metodo para verificar se o meteoro esta nas bordas da tela
+  /*
   this.edges = function(){
   if (this.posicao.x > width + this.r) {
       this.posicao.x = -this.r;
@@ -65,6 +66,7 @@ function Meteoro(posicao, r){
       this.posicao.y = height + this.r;
     }
   }
+  */
 
   //metodo para quebrar o meteoro se quando atingido seu raio for maior que 30
   this.quebrar = function(){
